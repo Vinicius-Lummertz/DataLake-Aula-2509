@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "my-pyspark-lab"
-version = "0.1.0"
-description = ""
-authors = ["Your Name <you@example.com>"]
+version = "0.2.0"
+description = "Criação de tabelas sql utilizando delta-lake e apache-iceberg"
+authors = ["Vinicius"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
@@ -10,6 +10,7 @@ python = "^3.12"
 pyspark = ">=3.5.0"
 jupyterlab = "^4.4.8"
 delta-spark = ">=3.2.0"
+jupyter = "^1.1.1"
 
 
 [build-system]

@@ -28,6 +28,9 @@ O projeto está organizado da seguinte forma:
 my-pyspark-lab/
 ├── notebooks/
 │   └── 01-testing-formats.ipynb   # Notebook de exemplo para testar os formatos
+├── docs/
+    ├── delta-lake.md                     # Armazenamento local para tabelas Delta
+│   └── apache-iceberg.md                            #documentação realizada utilizando mkdocs
 ├── warehouse/
 │   ├── delta/                     # Armazenamento local para tabelas Delta
 │   └── iceberg/                   # Armazenamento local para tabelas Iceberg
@@ -101,8 +104,8 @@ Após a inicialização, o Jupyter Lab será aberto automaticamente no seu naveg
 
 ### 5. Execute o Notebook de Teste
 
-1.  No Jupyter Lab, navegue até a pasta `notebooks/`.
-2.  Abra o arquivo `01-testing-formats.ipynb`.
+1.  No Jupyter Lab ja abrirá automaticamente na pasta `notebooks/`.
+2.  Abras os arquivos tanto do apache-iceberg quanto do delta-lake.
 3.  Execute todas as células do notebook para confirmar que a sessão Spark é criada corretamente e que você pode ler e escrever tabelas nos formatos Delta e Iceberg.
 
 Se todas as células forem executadas sem erro, seu ambiente está configurado e pronto para uso! ✅
