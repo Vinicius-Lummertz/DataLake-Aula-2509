@@ -1,0 +1,21 @@
+id_profissional,id_franquia,nome_profissional,cargo
+1,4,Funcionario_1,Caixa
+2,2,Funcionario_2,Gerente
+3,3,Funcionario_3,Cozinheiro
+4,4,Funcionario_4,Auxiliar de Cozinha
+5,4,Funcionario_5,Gerente
+6,5,Funcionario_6,Garçom
+7,2,Funcionario_7,Cozinheiro
+8,1,Funcionario_8,Caixa
+9,3,Funcionario_9,Gerente
+10,4,Funcionario_10,Caixa
+11,4,Funcionario_11,Cozinheiro
+12,2,Funcionario_12,Caixa
+13,2,Funcionario_13,Gerente
+14,4,Funcionario_14,Gerente
+15,3,Funcionario_15,Caixa
+16,2,Funcionario_16,Cozinheiro
+17,2,Funcionario_17,Caixa
+18,1,Funcionario_18,Auxiliar de Cozinha
+19,1,Funcionario_19,Gerente
+20,3,Funcionario_20,Caixa

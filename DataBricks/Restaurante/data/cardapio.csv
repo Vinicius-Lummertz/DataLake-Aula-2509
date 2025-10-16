@@ -1,0 +1,9 @@
+id_prato,nome_prato,preco,categoria
+201,Prato Feito (PF),25.0,Principal
+202,Hambúrguer Clássico,30.5,Lanche
+203,Pizza de Muçarela,45.0,Pizza
+204,Salada Caesar,22.0,Salada
+205,Porção de Batata Frita,15.0,Acompanhamento
+206,Frango Grelhado,28.0,Principal
+207,Refrigerante Lata,6.0,Bebida
+208,Suco Natural,8.5,Bebida
