@@ -1,39 +1,96 @@
-# Projeto Lakehouse para Análise de Vendas de Restaurante
+# Projeto Lakehouse: Análise de Vendas de Restaurante
 
-Este projeto demonstra a construção de um pipeline de dados ELT (Extract, Load, Transform) utilizando Databricks, seguindo a arquitetura Medalhão (Bronze, Silver, Gold) para processar e analisar dados de vendas de uma rede de restaurantes.
+Este projeto demonstra um pipeline de dados ELT (Extract, Load, Transform) completo construído no Databricks. O objetivo é processar dados de vendas de uma rede de restaurantes, desde a ingestão de dados brutos até a criação de um modelo dimensional (Star Schema) pronto para análise e Business Intelligence.
 
-##  Arquitetura
+O pipeline utiliza a **Arquitetura Medalhão** (Bronze, Silver, Gold) e é totalmente orquestrado por notebooks Databricks, garantindo reprodutibilidade e escalabilidade.
 
-O pipeline é orquestrado em três camadas principais:
+---
 
-1.  **Camada Landing/Bronze:** Os dados brutos (arquivos CSV) são ingeridos de um volume e carregados em tabelas Delta na camada Bronze, mantendo a estrutura original e adicionando metadados de auditoria.
-2.  **Camada Silver:** Os dados da camada Bronze passam por um processo de limpeza, padronização de nomes de colunas, e enriquecimento, resultando em tabelas mais consistentes e prontas para análise.
-3.  **Camada Gold:** A partir da camada Silver, é construído um modelo dimensional (Star Schema) otimizado para Business Intelligence e análises. Este modelo consiste em tabelas de dimensão (ex: `dim_franquia`, `dim_cardapio`) e uma tabela de fatos (`fato_vendas`).
+## 🚀 Arquitetura Medalhão
 
-## Estrutura do Repositório
+O pipeline é dividido em três camadas lógicas de dados, cada uma com um propósito específico:
 
--   `/notebooks`: Contém os notebooks Databricks para cada etapa do pipeline (Setup, Landing->Bronze, Bronze->Silver, Silver->Gold, Cleanup).
--   `/docs`: Documentação do projeto gerada com MkDocs.
--   `README.md`: Este arquivo.
--   `mkdocs.yml`: Arquivo de configuração para a documentação.
+1.  **Camada Landing/Bronze**:
+    * **Propósito**: Ingestão de dados brutos (Extract & Load).
+    * **Processo**: Os dados de origem (simulados como CSVs) são carregados de um Volume (`workspace.landing.dados`) para tabelas Delta na camada Bronze (ex: `bronze.vendas`).
+    * **Transformações**: Nenhuma transformação de negócio é aplicada. Apenas metadados de auditoria (como `data_hora_bronze` e `fonte_dados`) são adicionados.
 
-## Modelo de Dados (Camada Gold)
+2.  **Camada Silver**:
+    * **Propósito**: Dados limpos, padronizados e enriquecidos (Transform).
+    * **Processo**: As tabelas da Bronze são lidas e passam por um processo de limpeza.
+    * **Transformações**: Renomeação de colunas (ex: `id_franquia` -> `SK_FRANQUIA`), padronização de tipos de dados, e validações de qualidade.
 
--   **`fato_vendas`**: Tabela central com as métricas de negócio (quantidade vendida, valor total).
--   **`dim_franquia`**: Dimensão com informações sobre as filiais do restaurante.
--   **`dim_profissional`**: Dimensão com os dados dos funcionários.
--   **`dim_cardapio`**: Dimensão contendo os pratos, preços e categorias.
--   **`dim_tempo`**: Dimensão de data para análises temporais.
+3.  **Camada Gold**:
+    * **Propósito**: Modelo de dados de negócios, otimizado para análise (BI).
+    * **Processo**: Os dados da Silver são agregados e modelados.
+    * **Transformações**: Criação de um **Star Schema** com tabelas Fato (ex: `fato_vendas`) e Dimensão (ex: `dim_franquia`, `dim_cardapio`, `dim_tempo`).
 
-## Como Executar o Pipeline
+---
 
-1.  **Configurar o Ambiente:** Execute o notebook `01_Setup_Ambiente.py` para criar os schemas e volumes necessários.
-2.  **Upload dos Dados:** Faça o upload dos arquivos CSV (`franquias.csv`, `vendas.csv`, etc.) para o volume `workspace.landing.dados`.
-3.  **Criar um Job no Databricks:**
-    -   Crie um novo Job.
-    -   Adicione três tarefas sequenciais, cada uma apontando para um notebook na seguinte ordem:
-        1.  `02_Landing_para_Bronze.py`
-        2.  `03_Bronze_para_Silver.py`
-        3.  `04_Silver_para_Gold.py`
-    -   Execute o Job para processar os dados através de todo o pipeline.
-4.  **Análise:** Após a execução, os dados estarão disponíveis na camada Gold (`gold.fato_vendas`) para serem consumidos por ferramentas de BI ou notebooks de análise.
+## ⚙️ Orquestração e Execução
+
+O pipeline é executado através de uma sequência de notebooks, que devem ser rodados na ordem correta.
+
+### Ordem de Execução
+
+1.  **`Notebooks/Setup.py`**:
+    * **O que faz**: Prepara todo o ambiente. Primeiro, executa uma limpeza (`DROP SCHEMA ... CASCADE`) para garantir que o pipeline possa ser re-executado do zero.
+    * **Criação**: `workspace.landing`, `workspace.bronze`, `workspace.silver`, `workspace.gold` e o Volume `workspace.landing.dados`.
+
+2.  **`Notebooks/Landing-Bronze.py`**:
+    * **O que faz**: Simula a ingestão de dados.
+    * **Processo**:
+        1.  Usa `dbutils.fs.put()` para criar os arquivos CSV (`vendas.csv`, `franquias.csv`, etc.) no Volume `workspace.landing.dados`.
+        2.  Lê esses CSVs com `spark.read.csv()`.
+        3.  Adiciona metadados de auditoria (`data_hora_bronze`).
+        4.  Salva as tabelas em formato Delta no schema `bronze`.
+
+3.  **`Notebooks/Bronze-Silver.py`**:
+    * **O que faz**: Limpa e padroniza os dados.
+    * **Processo**:
+        1.  Lê as tabelas do schema `bronze`.
+        2.  Aplica regras de renomeação (ex: `id_franquia` para `SK_FRANQUIA`).
+        3.  Salva as tabelas limpas em formato Delta no schema `silver`.
+
+4.  **`Notebooks/Silver-Gold.py`**:
+    * **O que faz**: Constrói o modelo dimensional (Star Schema).
+    * **Processo**:
+        1.  Lê as tabelas do schema `silver`.
+        2.  Cria as tabelas de Dimensão (`dim_franquia`, `dim_profissional`, `dim_cardapio`, `dim_tempo`).
+        3.  Usa `MERGE INTO` para carregar os dados nas dimensões (SCD Tipo 1).
+        4.  Cria a tabela `fato_vendas` e a popula fazendo join com as dimensões para obter as chaves substitutas (SKs).
+
+### Notebooks Auxiliares
+
+* **`Notebooks/ShowTables.py`**: Um notebook simples de consulta para visualizar os resultados finais nas tabelas `gold.*`.
+* **`Notebooks/Cleanup.py`**: Um notebook autônomo para limpar completamente todos os schemas (`landing`, `bronze`, `silver`, `gold`) do ambiente.
+
+---
+
+## 📊 Modelo de Dados (Camada Gold)
+
+O produto final do pipeline é um Star Schema otimizado para consultas analíticas:
+
+* **Tabela Fato**: `fato_vendas`
+* **Tabelas de Dimensão**:
+    * `dim_franquia`
+    * `dim_profissional`
+    * `dim_cardapio`
+    * `dim_tempo`
+
+---
+
+## 📖 Documentação (MkDocs)
+
+Este projeto inclui uma documentação detalhada gerada com MkDocs. Para visualizar:
+
+1.  Instale o MkDocs e o tema Material:
+    ```bash
+    pip install mkdocs mkdocs-material
+    ```
+2.  Navegue até o diretório `DataBricks/Restaurante` (onde o `mkdocs.yml` está).
+3.  Execute o servidor local:
+    ```bash
+    mkdocs serve
+    ```
+4.  Abra `http://127.0.0.1:8000` no seu navegador.

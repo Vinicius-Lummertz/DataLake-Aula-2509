@@ -1,11 +1,27 @@
-site_name: Projeto Lakehouse Restaurante
-site_author: Seu Nome
+site_name: Pipeline Lakehouse - Restaurante
+site_description: Documentação do pipeline ELT Medalhão no Databricks.
+site_author: Vinicius Lummertz
 
 theme:
   name: material
   palette:
-    scheme: default
+    primary: blue
+    accent: light-blue
+  features:
+    - navigation.tabs
+    - navigation.top
+    - toc.integrate
 
+# Estrutura de Navegação do Site
 nav:
-  - 'Início': 'index.md'
-  - 'Arquitetura do Pipeline': 'arquitetura.md'
+  - '🏠 Visão Geral': 'index.md'
+  - '🏗️ Arquitetura':
+    - 'Arquitetura Medalhão': 'arquitetura.md'
+    - 'Modelo de Dados (Gold)': 'modelo_dados_gold.md'
+  - '⚙️ Detalhes dos Notebooks':
+    - 'Visão Geral da Orquestração': 'notebooks/index.md'
+    - 'Setup': 'notebooks/00_setup.md'
+    - 'Landing-Bronze': 'notebooks/01_landing_bronze.md'
+    - 'Bronze-Silver': 'notebooks/02_bronze_silver.md'
+    - 'Silver-Gold': 'notebooks/03_silver_gold.md'
+    - 'Utilitários': 'notebooks/99_utilitarios.md'
